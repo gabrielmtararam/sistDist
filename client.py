@@ -1,23 +1,57 @@
-#
-#   Hello World client in Python
-#   Connects REQ socket to tcp://localhost:5555
-#   Sends "Hello" to server, expects "World" back
-#
 
 import zmq
 
-context = zmq.Context()
+import time
+import threading
 
-#  Socket to talk to server
-print("Connecting to hello world server…")
-socket = context.socket(zmq.REQ)
-socket.connect("tcp://localhost:5555")
+num_threads = 100
+num_req = 2
 
-#  Do 10 requests, waiting each time for a response
-for request in range(10):
-    print(f"Sending request {request} …")
-    socket.send(b"Hello")
+time_spent_total = 0
+def minha_funcao(numero):
+    global time_spent_total
+    print(f'Thread {numero} iniciada')
+    context = zmq.Context()
 
-    #  Get the reply.
-    message = socket.recv()
-    print(f"Received reply {request} [ {message} ]")
+    #  Socket to talk to server
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:5553")
+
+    #  Do 10 requests, waiting each time for a response
+    for request in range(num_req):
+        message = f" thread {numero} req {request} "
+
+        print(message)
+        ti = time.time()
+        socket.send_string(message)
+        message = socket.recv()
+        tf = time.time()
+        t_total = tf - ti
+        time_spent_total += t_total
+
+
+
+# Número de threads que você deseja executar
+
+# Lista para armazenar as threads
+threads = []
+
+# Criar e iniciar as threads
+ti = time.time()
+for i in range(num_threads):
+    thread = threading.Thread(target=minha_funcao, args=(i,))
+    thread.start()
+    threads.append(thread)
+
+# Esperar que todas as threads terminem
+for thread in threads:
+    thread.join()
+
+tf = time.time()
+time_sum = tf - ti
+
+print(f"t_total {time_sum}")
+
+total_runs = num_threads *num_req
+print(f"total_runs {total_runs}")
+print(f"div {total_runs/time_sum}")

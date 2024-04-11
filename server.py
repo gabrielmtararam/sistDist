@@ -6,18 +6,26 @@
 
 import time
 import zmq
+import json
 
 context = zmq.Context()
 socket = context.socket(zmq.REP)
-socket.bind("tcp://*:5555")
+socket.bind("tcp://*:5553")
 
 while True:
     #  Wait for next request from client
+    ti = time.time()
     message = socket.recv()
     print(f"Received request: {message}")
 
     #  Do some 'work'
     time.sleep(1)
-
+    # teste = {
+    #     'chave':'valor'
+    # }
     #  Send reply back to client
-    socket.send(b"World")
+    # socket.send(b"World")
+    teste = message
+    # r = json.dumps(teste)
+    # socket.send_json(teste)
+    socket.send(teste)
