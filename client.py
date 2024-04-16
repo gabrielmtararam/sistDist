@@ -10,18 +10,17 @@ num_req = 2
 time_spent_total = 0
 def minha_funcao(numero):
     global time_spent_total
-    print(f'Thread {numero} iniciada')
     context = zmq.Context()
-
     #  Socket to talk to server
     socket = context.socket(zmq.REQ)
     socket.connect("tcp://localhost:5553")
 
     #  Do 10 requests, waiting each time for a response
     for request in range(num_req):
-        message = f" thread {numero} req {request} "
+        # message = f" thread {numero} req {request} "
+        message = " a "
 
-        print(message)
+        print("a")
         ti = time.time()
         socket.send_string(message)
         message = socket.recv()
@@ -52,6 +51,6 @@ time_sum = tf - ti
 
 print(f"t_total {time_sum}")
 
-total_runs = num_threads *num_req
+total_runs = num_threads * num_req
 print(f"total_runs {total_runs}")
 print(f"div {total_runs/time_sum}")
